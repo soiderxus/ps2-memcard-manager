@@ -1,4 +1,4 @@
-# mymc (versión para Python 3)
+# PS2 Memory Card Manager (mymc para Python 3)
 
 *[Read in English](README.md)*
 
@@ -193,8 +193,8 @@ pip install wxPython numpy
 ### 2. Descargar mymc
 
 ```sh
-git clone https://github.com/soiderxus/my-mc-gui-native-for-linux.git
-cd my-mc-gui-native-for-linux
+git clone https://github.com/soiderxus/ps2-memcard-manager.git
+cd ps2-memcard-manager
 chmod +x mymc.py mymc-gui
 ```
 
