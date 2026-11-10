@@ -2,7 +2,7 @@
 
 *[Read in English](README.md)*
 
-Herramienta para gestionar **imágenes de tarjetas de memoria de PlayStation 2**
+Una herramienta con interfaz gráfica para Linux, macOS y Windows  para gestionar **imágenes de tarjetas de memoria de PlayStation 2**
 como las que usa el emulador PCSX2 (`Mcd001.ps2`). Importa y exporta
 partidas guardadas, y también crea, inspecciona y verifica imágenes de
 tarjeta.
