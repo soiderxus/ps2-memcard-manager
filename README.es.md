@@ -235,4 +235,4 @@ Categories=Utility;Game;
 - mymc original de **Ross Ridge**, publicado como **dominio público**.
   La documentación original está en [`README.txt`](README.txt).
 - El port a Python 3, la GUI en wxPython 4 y el visor de iconos 3D
-  también se publican como dominio público.
+  también se publican como dominio público, bajo la [Unlicense](LICENSE).

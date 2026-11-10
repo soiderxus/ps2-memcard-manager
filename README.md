@@ -10,7 +10,7 @@ This is a port of Ross Ridge's **mymc 2.7** from Python 2 to **Python 3**,
 with a working graphical interface on wxPython 4 and a new cross-platform
 3D save icon viewer.
 
-![python](https://img.shields.io/badge/python-3.8%2B-blue) ![license](https://img.shields.io/badge/license-public%20domain-green)
+![python](https://img.shields.io/badge/python-3.8%2B-blue) ![license](https://img.shields.io/badge/license-Unlicense-green)
 
 ## Features
 
@@ -229,4 +229,4 @@ Categories=Utility;Game;
 - Original mymc by **Ross Ridge**, released into the **public domain**.
   The original documentation is in [`README.txt`](README.txt).
 - Python 3 port, wxPython 4 GUI and 3D icon viewer: also released into
-  the public domain.
+  the public domain under the [Unlicense](LICENSE).
