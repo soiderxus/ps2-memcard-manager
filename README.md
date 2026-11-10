@@ -2,7 +2,7 @@
 
 *[Leer en español](README.es.md)*
 
-A tool for managing **PlayStation 2 memory card images** like the ones the
+A gui tool for Linux, macOS and Windows to manage **PlayStation 2 memory card images** like the ones the
 PCSX2 emulator uses (`Mcd001.ps2`). It imports and exports save games, and
 it can also create, inspect and check card images.
 
