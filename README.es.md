@@ -31,6 +31,84 @@ iconos 3D multiplataforma.
 
 - Imágenes con o sin datos ECC. Los errores de un bit se corrigen solos.
 
+  <p align="center">
+    <img src="screenshots/01.png" width="49%" alt="Main window">
+    <img src="screenshots/02.png" width="49%" alt="File options">
+    <img src="screenshots/03.png" width="49%" alt="Delete File confirmation">
+    <img src="screenshots/04.png" width="49%" alt="3D icon options">
+  </p>
+
+  
+  ## Uso
+
+### Interfaz gráfica
+
+```sh
+./mymc-gui                    # pregunta qué tarjeta abrir
+./mymc-gui ~/.config/PCSX2/memcards/Mcd001.ps2
+```
+Ejecutar `./mymc.py` sin argumentos también abre la GUI.
+
+- **Open**: elige una imagen de tarjeta `.ps2`.
+- **Import**: añade una o varias partidas (`.psu .max .cbs .sps .xps`).
+- **Export**: selecciona partidas y expórtalas como `.psu` o `.max`.
+- **File → Delete**: borra las partidas seleccionadas.
+- Al seleccionar una partida se ve su icono 3D. **Haz clic derecho sobre
+  el icono** (o usa *Options → Icon Window*) para cambiar la animación,
+  la iluminación y la cámara.
+- *Options → ASCII Descriptions* muestra los títulos en ASCII simple.
+
+> ⚠️ **No modifiques una tarjeta mientras PCSX2 está abierto.** Cierra
+> antes el emulador o la tarjeta puede corromperse. Haz copia de
+> seguridad de tus tarjetas antes de usar cualquier herramienta sobre
+> ellas.
+
+### Línea de comandos
+
+```
+./mymc.py [-i] tarjeta.ps2 comando [opciones] [argumentos]
+```
+
+| Comando | Descripción |
+|---|---|
+| `dir` | Lista las partidas con su título y tamaño, y el espacio libre |
+| `ls [dir]` | Lista los archivos de un directorio |
+| `import partida...` | Importa partidas |
+| `export [-m\|-p] [-l] dir...` | Exporta partidas (`-p` .psu, por defecto; `-m` .max; `-l` nombres largos descriptivos) |
+| `delete dir...` | Borra una partida (con todo su contenido) |
+| `add`, `extract`, `mkdir`, `remove`, `rename` | Trabajan con archivos sueltos |
+| `set`, `clear` | Cambian atributos (protegido, oculto, …) |
+| `check` | Busca errores en el sistema de archivos |
+| `df` | Muestra el espacio libre |
+| `format [-e] [-c clusters]` | Crea una tarjeta nueva (`-e`: sin ECC) |
+| `gui` | Abre la GUI con esta tarjeta |
+
+Ejecuta `./mymc.py --help` o `./mymc.py tarjeta.ps2 COMANDO --help` para
+ver los detalles.
+
+Ejemplos:
+```sh
+./mymc.py Mcd001.ps2 dir
+./mymc.py Mcd001.ps2 import "Algun Juego.psu"
+./mymc.py Mcd001.ps2 export -l BASLUS-12345GAME
+./mymc.py nueva.ps2 format
+```
+
+## Opcional: acceso en el menú (Linux)
+
+Para que mymc aparezca en el menú de aplicaciones del escritorio, crea
+`~/.local/share/applications/mymc.desktop` y cambia las rutas por la
+carpeta donde clonaste el repositorio:
+```ini
+[Desktop Entry]
+Type=Application
+Name=mymc
+Comment=Gestor de tarjetas de memoria de PS2
+Exec=/ruta/a/mymc/mymc-gui %f
+Terminal=false
+Categories=Utility;Game;
+```
+  
 ## Requisitos
 
 | Componente | Sirve para | ¿Obligatorio? |
@@ -129,76 +207,6 @@ la misma carpeta.
 python3 -c "import wx; print('wxPython', wx.version())"
 python3 -c "import numpy; print('numpy', numpy.__version__)"
 ./mymc.py --version
-```
-
-## Uso
-
-### Interfaz gráfica
-
-```sh
-./mymc-gui                    # pregunta qué tarjeta abrir
-./mymc-gui ~/.config/PCSX2/memcards/Mcd001.ps2
-```
-Ejecutar `./mymc.py` sin argumentos también abre la GUI.
-
-- **Open**: elige una imagen de tarjeta `.ps2`.
-- **Import**: añade una o varias partidas (`.psu .max .cbs .sps .xps`).
-- **Export**: selecciona partidas y expórtalas como `.psu` o `.max`.
-- **File → Delete**: borra las partidas seleccionadas.
-- Al seleccionar una partida se ve su icono 3D. **Haz clic derecho sobre
-  el icono** (o usa *Options → Icon Window*) para cambiar la animación,
-  la iluminación y la cámara.
-- *Options → ASCII Descriptions* muestra los títulos en ASCII simple.
-
-> ⚠️ **No modifiques una tarjeta mientras PCSX2 está abierto.** Cierra
-> antes el emulador o la tarjeta puede corromperse. Haz copia de
-> seguridad de tus tarjetas antes de usar cualquier herramienta sobre
-> ellas.
-
-### Línea de comandos
-
-```
-./mymc.py [-i] tarjeta.ps2 comando [opciones] [argumentos]
-```
-
-| Comando | Descripción |
-|---|---|
-| `dir` | Lista las partidas con su título y tamaño, y el espacio libre |
-| `ls [dir]` | Lista los archivos de un directorio |
-| `import partida...` | Importa partidas |
-| `export [-m\|-p] [-l] dir...` | Exporta partidas (`-p` .psu, por defecto; `-m` .max; `-l` nombres largos descriptivos) |
-| `delete dir...` | Borra una partida (con todo su contenido) |
-| `add`, `extract`, `mkdir`, `remove`, `rename` | Trabajan con archivos sueltos |
-| `set`, `clear` | Cambian atributos (protegido, oculto, …) |
-| `check` | Busca errores en el sistema de archivos |
-| `df` | Muestra el espacio libre |
-| `format [-e] [-c clusters]` | Crea una tarjeta nueva (`-e`: sin ECC) |
-| `gui` | Abre la GUI con esta tarjeta |
-
-Ejecuta `./mymc.py --help` o `./mymc.py tarjeta.ps2 COMANDO --help` para
-ver los detalles.
-
-Ejemplos:
-```sh
-./mymc.py Mcd001.ps2 dir
-./mymc.py Mcd001.ps2 import "Algun Juego.psu"
-./mymc.py Mcd001.ps2 export -l BASLUS-12345GAME
-./mymc.py nueva.ps2 format
-```
-
-## Opcional: acceso en el menú (Linux)
-
-Para que mymc aparezca en el menú de aplicaciones del escritorio, crea
-`~/.local/share/applications/mymc.desktop` y cambia las rutas por la
-carpeta donde clonaste el repositorio:
-```ini
-[Desktop Entry]
-Type=Application
-Name=mymc
-Comment=Gestor de tarjetas de memoria de PS2
-Exec=/ruta/a/mymc/mymc-gui %f
-Terminal=false
-Categories=Utility;Game;
 ```
 
 ## Cambios respecto a la 2.7 original

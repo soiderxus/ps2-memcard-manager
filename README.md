@@ -30,6 +30,81 @@ with a working graphical interface on wxPython 4 and a new cross-platform
 
 - Card images with or without ECC data. Single-bit errors are corrected
   automatically.
+  
+  <p align="center">
+    <img src="screenshots/01.png" width="49%" alt="Main window">
+    <img src="screenshots/02.png" width="49%" alt="File options">
+    <img src="screenshots/03.png" width="49%" alt="Delete File confirmation">
+    <img src="screenshots/04.png" width="49%" alt="3D icon options">
+  </p>
+
+  
+  ## Usage
+
+### Graphical interface
+
+```sh
+./mymc-gui                    # asks which card image to open
+./mymc-gui ~/.config/PCSX2/memcards/Mcd001.ps2
+```
+Running `./mymc.py` with no arguments also starts the GUI.
+
+- **Open**: choose a `.ps2` card image.
+- **Import**: add one or more save files (`.psu .max .cbs .sps .xps`).
+- **Export**: select saves and export them as `.psu` or `.max`.
+- **File → Delete**: remove the selected saves.
+- Select a save to see its 3D icon. **Right-click the icon** (or use
+  *Options → Icon Window*) to change animation, lighting and camera.
+- *Options → ASCII Descriptions* shows titles as plain ASCII.
+
+> ⚠️ **Don't modify a card image while PCSX2 is running.** Close the
+> emulator first or the card may get corrupted. Back up your card images
+> before you use any tool on them.
+
+### Command line
+
+```
+./mymc.py [-i] memcard.ps2 command [options] [arguments]
+```
+
+| Command | Description |
+|---|---|
+| `dir` | List saves with their titles and sizes, plus free space |
+| `ls [dir]` | List the files in a directory |
+| `import save...` | Import save files |
+| `export [-m\|-p] [-l] dir...` | Export saves (`-p` .psu default, `-m` .max, `-l` long descriptive names) |
+| `delete dir...` | Delete a save (recursively) |
+| `add`, `extract`, `mkdir`, `remove`, `rename` | Work with individual files |
+| `set`, `clear` | Change mode flags (protected, hidden, …) |
+| `check` | Check the file system for errors |
+| `df` | Show free space |
+| `format [-e] [-c clusters]` | Create a new card image (`-e`: without ECC) |
+| `gui` | Open the GUI on this card |
+
+Run `./mymc.py --help` or `./mymc.py card.ps2 COMMAND --help` for details.
+
+Examples:
+```sh
+./mymc.py Mcd001.ps2 dir
+./mymc.py Mcd001.ps2 import "Some Game.psu"
+./mymc.py Mcd001.ps2 export -l BASLUS-12345GAME
+./mymc.py new.ps2 format
+```
+
+## Optional: menu entry (Linux)
+
+To add mymc to your desktop's application menu, create
+`~/.local/share/applications/mymc.desktop` and replace the paths with
+the folder where you cloned the repository:
+```ini
+[Desktop Entry]
+Type=Application
+Name=mymc
+Comment=PS2 memory card manager
+Exec=/path/to/mymc/mymc-gui %f
+Terminal=false
+Categories=Utility;Game;
+```
 
 ## Requirements
 
@@ -127,73 +202,6 @@ No build step is needed. Keep all the `.py` files together in one directory.
 python3 -c "import wx; print('wxPython', wx.version())"
 python3 -c "import numpy; print('numpy', numpy.__version__)"
 ./mymc.py --version
-```
-
-## Usage
-
-### Graphical interface
-
-```sh
-./mymc-gui                    # asks which card image to open
-./mymc-gui ~/.config/PCSX2/memcards/Mcd001.ps2
-```
-Running `./mymc.py` with no arguments also starts the GUI.
-
-- **Open**: choose a `.ps2` card image.
-- **Import**: add one or more save files (`.psu .max .cbs .sps .xps`).
-- **Export**: select saves and export them as `.psu` or `.max`.
-- **File → Delete**: remove the selected saves.
-- Select a save to see its 3D icon. **Right-click the icon** (or use
-  *Options → Icon Window*) to change animation, lighting and camera.
-- *Options → ASCII Descriptions* shows titles as plain ASCII.
-
-> ⚠️ **Don't modify a card image while PCSX2 is running.** Close the
-> emulator first or the card may get corrupted. Back up your card images
-> before you use any tool on them.
-
-### Command line
-
-```
-./mymc.py [-i] memcard.ps2 command [options] [arguments]
-```
-
-| Command | Description |
-|---|---|
-| `dir` | List saves with their titles and sizes, plus free space |
-| `ls [dir]` | List the files in a directory |
-| `import save...` | Import save files |
-| `export [-m\|-p] [-l] dir...` | Export saves (`-p` .psu default, `-m` .max, `-l` long descriptive names) |
-| `delete dir...` | Delete a save (recursively) |
-| `add`, `extract`, `mkdir`, `remove`, `rename` | Work with individual files |
-| `set`, `clear` | Change mode flags (protected, hidden, …) |
-| `check` | Check the file system for errors |
-| `df` | Show free space |
-| `format [-e] [-c clusters]` | Create a new card image (`-e`: without ECC) |
-| `gui` | Open the GUI on this card |
-
-Run `./mymc.py --help` or `./mymc.py card.ps2 COMMAND --help` for details.
-
-Examples:
-```sh
-./mymc.py Mcd001.ps2 dir
-./mymc.py Mcd001.ps2 import "Some Game.psu"
-./mymc.py Mcd001.ps2 export -l BASLUS-12345GAME
-./mymc.py new.ps2 format
-```
-
-## Optional: menu entry (Linux)
-
-To add mymc to your desktop's application menu, create
-`~/.local/share/applications/mymc.desktop` and replace the paths with
-the folder where you cloned the repository:
-```ini
-[Desktop Entry]
-Type=Application
-Name=mymc
-Comment=PS2 memory card manager
-Exec=/path/to/mymc/mymc-gui %f
-Terminal=false
-Categories=Utility;Game;
 ```
 
 ## Changes from the original 2.7
