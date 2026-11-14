@@ -38,8 +38,31 @@ with a working graphical interface on wxPython 4 and a new cross-platform
     <img src="screenshots/04.png" width="49%" alt="3D icon options">
   </p>
 
-  
-  ## Usage
+- Uses your desktop's own file dialog (Dolphin on KDE Plasma, the GNOME
+  one on GNOME, and so on).
+
+## Quick start on Linux: AppImage
+
+No installation and no dependencies: everything is included.
+
+1. Download `mymc-…-x86_64.AppImage` from the
+   [latest release](https://github.com/soiderxus/ps2-memcard-manager/releases/latest).
+2. Make it executable: right-click → *Properties* → *Permissions* →
+   *Allow executing as program*, or in a terminal:
+   ```sh
+   chmod +x mymc-*-x86_64.AppImage
+   ```
+3. Double-click it, or run `./mymc-*-x86_64.AppImage` (optionally followed
+   by the path of a `.ps2` card to open).
+
+If it doesn't start and mentions FUSE, install `libfuse2` (Fedora:
+`fuse-libs`, Debian/Ubuntu: `libfuse2` or `libfuse2t64`), or run it with
+`--appimage-extract-and-run`.
+
+The AppImage opens the graphical interface. For the command line tool,
+or on Windows/macOS, use the [Python version](#installation-from-source-python).
+
+## Usage
 
 ### Graphical interface
 
@@ -47,6 +70,7 @@ with a working graphical interface on wxPython 4 and a new cross-platform
 ./mymc-gui                    # asks which card image to open
 ./mymc-gui ~/.config/PCSX2/memcards/Mcd001.ps2
 ```
+(With the AppImage, use `./mymc-*-x86_64.AppImage` instead of `./mymc-gui`.)
 Running `./mymc.py` with no arguments also starts the GUI.
 
 - **Open**: choose a `.ps2` card image.
@@ -93,20 +117,40 @@ Examples:
 
 ## Optional: menu entry (Linux)
 
-To add mymc to your desktop's application menu, create
-`~/.local/share/applications/mymc.desktop` and replace the paths with
-the folder where you cloned the repository:
+With the AppImage, the easiest way is an AppImage manager such as
+[Gear Lever](https://flathub.org/apps/it.mijorus.gearlever), which adds
+it to the menu for you.
+
+Otherwise, create `~/.local/share/applications/mymc.desktop`, and in
+`Exec=` put the path of the AppImage or of `mymc-gui` in the folder where
+you cloned the repository:
 ```ini
 [Desktop Entry]
 Type=Application
 Name=mymc
 Comment=PS2 memory card manager
-Exec=/path/to/mymc/mymc-gui %f
+Exec=/path/to/mymc-gui %f
 Terminal=false
 Categories=Utility;Game;
 ```
 
+## Settings and data
+
+mymc doesn't install anything. It only remembers the last folders you
+used and the *ASCII Descriptions* option:
+
+| What | Where (Linux) |
+|---|---|
+| Settings | `~/.config/mymc/mymc.conf` (moved automatically from `~/.mymc`, used by older versions) |
+| AppImage font cache | `~/.cache/mymc/` |
+
+Deleting these files resets mymc; they are created again when needed. To
+remove the AppImage completely, delete the `.AppImage` file and these two
+folders.
+
 ## Requirements
+
+Only for the Python version; the AppImage already includes everything.
 
 | Component | Needed for | Required? |
 |---|---|---|
@@ -120,7 +164,10 @@ GUI still works but doesn't show the icons.
 
 > Tested with Python 3.14, wxPython 4.2.4 (GTK3) and numpy 2.x on Fedora 44.
 
-## Installation
+## Installation from source (Python)
+
+Use this on Windows and macOS, for the command line tool, or if you
+prefer not to use the AppImage.
 
 ### 1. Install the dependencies
 
@@ -215,6 +262,13 @@ python3 -c "import numpy; print('numpy', numpy.__version__)"
   The pure Python code is always used.
 - When exporting from the GUI, the `.psu` / `.max` extension now follows
   the selected file type.
+- On Linux, file dialogs use the desktop's native chooser through
+  xdg-desktop-portal (falls back to the GTK dialog; set `MYMC_PORTAL=0`
+  to always use it).
+- Settings are stored in `~/.config/mymc/` instead of `~/.mymc`.
+- AppImage for Linux. To build it yourself: `./build-appimage.sh`
+  (needs podman or docker; it builds inside an Ubuntu 22.04 container so
+  the result runs on most distributions).
 - Bugs from 2.7 fixed:
   - `format -e` (no ECC) created images of the wrong size
   - `readline()` on files inside the card returned the wrong length

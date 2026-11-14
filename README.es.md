@@ -2,7 +2,7 @@
 
 *[Read in English](README.md)*
 
-Una herramienta con interfaz gráfica para Linux, macOS y Windows  para gestionar **imágenes de tarjetas de memoria de PlayStation 2**
+Una herramienta con interfaz gráfica para Linux, macOS y Windows para gestionar **imágenes de tarjetas de memoria de PlayStation 2**
 como las que usa el emulador PCSX2 (`Mcd001.ps2`). Importa y exporta
 partidas guardadas, y también crea, inspecciona y verifica imágenes de
 tarjeta.
@@ -38,8 +38,31 @@ iconos 3D multiplataforma.
     <img src="screenshots/04.png" width="49%" alt="3D icon options">
   </p>
 
-  
-  ## Uso
+- Usa el selector de archivos de tu escritorio (el de Dolphin en KDE
+  Plasma, el de GNOME en GNOME, etc.).
+
+## Inicio rápido en Linux: AppImage
+
+Sin instalar nada y sin dependencias: todo va incluido.
+
+1. Descarga `mymc-…-x86_64.AppImage` de la
+   [última versión publicada](https://github.com/soiderxus/ps2-memcard-manager/releases/latest).
+2. Dale permiso de ejecución: clic derecho → *Propiedades* → *Permisos*
+   → *Permitir ejecutar como programa*, o en una terminal:
+   ```sh
+   chmod +x mymc-*-x86_64.AppImage
+   ```
+3. Ábrela con doble clic, o ejecuta `./mymc-*-x86_64.AppImage` (puedes
+   añadir la ruta de una tarjeta `.ps2` para abrirla directamente).
+
+Si no arranca y menciona FUSE, instala `libfuse2` (Fedora: `fuse-libs`;
+Debian/Ubuntu: `libfuse2` o `libfuse2t64`), o ejecútala con
+`--appimage-extract-and-run`.
+
+La AppImage abre la interfaz gráfica. Para la herramienta de línea de
+comandos, o en Windows/macOS, usa la [versión en Python](#instalación-desde-el-código-python).
+
+## Uso
 
 ### Interfaz gráfica
 
@@ -47,6 +70,7 @@ iconos 3D multiplataforma.
 ./mymc-gui                    # pregunta qué tarjeta abrir
 ./mymc-gui ~/.config/PCSX2/memcards/Mcd001.ps2
 ```
+(Con la AppImage, usa `./mymc-*-x86_64.AppImage` en lugar de `./mymc-gui`.)
 Ejecutar `./mymc.py` sin argumentos también abre la GUI.
 
 - **Open**: elige una imagen de tarjeta `.ps2`.
@@ -96,20 +120,40 @@ Ejemplos:
 
 ## Opcional: acceso en el menú (Linux)
 
-Para que mymc aparezca en el menú de aplicaciones del escritorio, crea
-`~/.local/share/applications/mymc.desktop` y cambia las rutas por la
-carpeta donde clonaste el repositorio:
+Con la AppImage, lo más fácil es usar un gestor de AppImages como
+[Gear Lever](https://flathub.org/apps/it.mijorus.gearlever), que la
+añade al menú por ti.
+
+Si no, crea `~/.local/share/applications/mymc.desktop` y en `Exec=` pon
+la ruta de la AppImage o de `mymc-gui` en la carpeta donde clonaste el
+repositorio:
 ```ini
 [Desktop Entry]
 Type=Application
 Name=mymc
 Comment=Gestor de tarjetas de memoria de PS2
-Exec=/ruta/a/mymc/mymc-gui %f
+Exec=/ruta/a/mymc-gui %f
 Terminal=false
 Categories=Utility;Game;
 ```
-  
+
+## Configuración y datos
+
+mymc no instala nada. Solo recuerda las últimas carpetas que usaste y la
+opción *ASCII Descriptions*:
+
+| Qué | Dónde (Linux) |
+|---|---|
+| Configuración | `~/.config/mymc/mymc.conf` (se mueve sola desde `~/.mymc`, que usaban las versiones anteriores) |
+| Caché de fuentes de la AppImage | `~/.cache/mymc/` |
+
+Si borras estos archivos, mymc vuelve a la configuración inicial y los
+crea de nuevo cuando hace falta. Para eliminar la AppImage por completo,
+borra el archivo `.AppImage` y estas dos carpetas.
+
 ## Requisitos
+
+Solo para la versión en Python; la AppImage ya lo incluye todo.
 
 | Componente | Sirve para | ¿Obligatorio? |
 |---|---|---|
@@ -123,7 +167,10 @@ la GUI funciona igual, pero no muestra los iconos.
 
 > Probado con Python 3.14, wxPython 4.2.4 (GTK3) y numpy 2.x en Fedora 44.
 
-## Instalación
+## Instalación desde el código (Python)
+
+Úsala en Windows y macOS, para la herramienta de línea de comandos, o si
+prefieres no usar la AppImage.
 
 ### 1. Instalar las dependencias
 
@@ -221,6 +268,13 @@ python3 -c "import numpy; print('numpy', numpy.__version__)"
   `mymcicon`). Siempre se usa el código en Python puro.
 - Al exportar desde la GUI, la extensión `.psu` / `.max` ahora depende
   del tipo de archivo elegido.
+- En Linux, los diálogos de archivos usan el selector nativo del
+  escritorio mediante xdg-desktop-portal (si no está disponible se usa el
+  de GTK; con `MYMC_PORTAL=0` se usa siempre).
+- La configuración se guarda en `~/.config/mymc/` en lugar de `~/.mymc`.
+- AppImage para Linux. Para construirla tú mismo: `./build-appimage.sh`
+  (necesita podman o docker; la construye dentro de un contenedor Ubuntu
+  22.04 para que funcione en la mayoría de distribuciones).
 - Bugs de la 2.7 corregidos:
   - `format -e` (sin ECC) creaba imágenes de tamaño incorrecto
   - `readline()` sobre archivos de la tarjeta devolvía una longitud incorrecta

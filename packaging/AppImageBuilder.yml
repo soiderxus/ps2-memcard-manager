@@ -1,0 +1,54 @@
+# AppImage recipe for mymc (PS2 memory card manager).
+#
+# Build inside an Ubuntu 22.04 container so the AppImage runs on most
+# Linux distributions (it needs a glibc at least as new as the one it was
+# built with).  From the repository root:
+#
+#   ./build-appimage.sh
+#
+# The result is mymc-<version>-x86_64.AppImage in the repository root.
+
+version: 1
+
+script:
+  - rm -rf AppDir || true
+  - mkdir -p AppDir/usr/share/mymc AppDir/usr/share/icons/hicolor/512x512/apps
+  - cp *.py mymc-gui AppDir/usr/share/mymc/
+  - cp packaging/mymc.png AppDir/usr/share/icons/hicolor/512x512/apps/mymc.png
+
+AppDir:
+  path: ./AppDir
+  app_info:
+    id: io.github.soiderxus.mymc
+    name: mymc
+    icon: mymc
+    version: 2.7-py3
+    exec: usr/bin/python3
+    exec_args: "$APPDIR/usr/share/mymc/mymc-gui $@"
+
+  apt:
+    arch: amd64
+    sources:
+      - sourceline: 'deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main universe'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x871920D1991BC93C'
+    include:
+      - python3
+      - python3-wxgtk4.0
+      - python3-numpy
+      # D-Bus access to the desktop's native file dialogs
+      # (xdg-desktop-portal, see filedialogs.py)
+      - python3-gi
+      - gir1.2-glib-2.0
+      # Fonts bundled so Japanese save titles render on any distro
+      # (see appimage_support.py)
+      - fonts-droid-fallback
+      - fonts-dejavu-core
+
+  runtime:
+    env:
+      PYTHONHOME: '${APPDIR}/usr'
+      PYTHONPATH: '${APPDIR}/usr/lib/python3.10:${APPDIR}/usr/lib/python3/dist-packages'
+
+AppImage:
+  arch: x86_64
+  update-information: guess

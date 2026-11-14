@@ -6,3 +6,7 @@ venv/
 *.kate-swp
 *~
 *.swp
+AppDir/
+appimage-build/
+*.AppImage
+*.zsync

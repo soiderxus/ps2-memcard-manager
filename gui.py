@@ -21,6 +21,15 @@ import wx
 import ps2mc
 import ps2save
 import guires
+import filedialogs
+
+CARD_FILTERS = [("PS2 memory card images (*.ps2)", ["*.ps2"]),
+		("All files", ["*"])]
+SAVE_FILTERS = [("PS2 save files (.psu .max .cbs .sps .xps)",
+		 ["*.psu", "*.max", "*.cbs", "*.sps", "*.xps"]),
+		("All files", ["*"])]
+EXPORT_FILTERS = [("EMS save file (*.psu)", ["*.psu"]),
+		  ("MAX Drive save file (*.max)", ["*.max"])]
 
 try:
 	import ctypes
@@ -565,6 +574,25 @@ class sw_icon_window(wx.Panel):
 		bmp = wx.Bitmap.FromBuffer(w, h, img.tobytes())
 		dc.DrawBitmap(bmp, 0, 0)
 
+def _config_file_path():
+	"""Where the settings are stored on Linux: ~/.config/mymc/mymc.conf
+	(following $XDG_CONFIG_HOME).  Settings from older versions, kept in
+	~/.mymc, are moved there automatically.  Returns "" on other systems
+	(or on error) to let wxWidgets use its default location."""
+
+	if not sys.platform.startswith("linux"):
+		return ""
+	base = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+	path = os.path.join(base, "mymc", "mymc.conf")
+	old = os.path.expanduser("~/.mymc")
+	try:
+		os.makedirs(os.path.dirname(path), exist_ok = True)
+		if not os.path.exists(path) and os.path.isfile(old):
+			os.replace(old, path)
+	except OSError:
+		return ""
+	return path
+
 class gui_config(wx.Config):
 	"""A class for holding the persistant configuration state."""
 
@@ -574,6 +602,7 @@ class gui_config(wx.Config):
 
 	def __init__(self):
 		wx.Config.__init__(self, "mymc", "Ross Ridge",
+				   localFilename = _config_file_path(),
 				   style = wx.CONFIG_USE_LOCAL_FILE)
 
 	def get_memcard_dir(self, default = ""):
@@ -881,13 +910,12 @@ class gui_frame(wx.Frame):
 					len(self.dirlist.selected) > 0)
 
 	def evt_cmd_open(self, event = None):
-		fn = wx.FileSelector("Open Memory Card Image",
-				     self.config.get_memcard_dir(""),
-				     "Mcd001.ps2", "ps2", "*.ps2",
-				     wx.FD_FILE_MUST_EXIST | wx.FD_OPEN,
-				     self)
-		if fn == "":
+		paths = filedialogs.open_files(self, "Open Memory Card Image",
+					       self.config.get_memcard_dir(""),
+					       CARD_FILTERS)
+		if not paths:
 			return
+		fn = paths[0]
 		self.open_mc(fn)
 		if self.mc != None:
 			dirname = os.path.dirname(fn)
@@ -917,28 +945,19 @@ class gui_frame(wx.Frame):
 		dir = self.config.get_savefile_dir("")
 		if len(selected) == 1:
 			(dirname, sf, longname) = sfiles[0]
-			fd = wx.FileDialog(self, "Export " + dirname,
-					   dir, longname + ".psu",
-					   ("EMS save file (.psu)|*.psu"
-					    "|MAXDrive save file (.max)|*.max"),
-					   wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
-			try:
-				if fd.ShowModal() == wx.ID_CANCEL:
-					return
-				fn = fd.GetPath()
-				ext = [".psu", ".max"][fd.GetFilterIndex()]
-			finally:
-				fd.Destroy()
-			if fn == "":
+			(fn, index) = filedialogs.save_file(
+				self, "Export " + dirname, dir,
+				longname + ".psu", EXPORT_FILTERS)
+			if not fn:
 				return
-			# GTK doesn't add the extension of the chosen filter
-			# by itself.
+			# Not every file dialog adds the extension of the
+			# chosen file type by itself.
 			if not fn.lower().endswith((".psu", ".max")):
-				fn += ext
+				fn += [".psu", ".max"][index or 0]
 			try:
 				f = open(fn, "wb")
 				try:
-					if fn.endswith(".max"):
+					if fn.lower().endswith(".max"):
 						sf.save_max_drive(f)
 					else:
 						sf.save_ems(f)
@@ -955,8 +974,8 @@ class gui_frame(wx.Frame):
 			self.message_box("Exported " + fn + " successfully.")
 			return
 
-		dir = wx.DirSelector("Export Save Files", dir, parent = self)
-		if dir == "":
+		dir = filedialogs.choose_directory(self, "Export Save Files", dir)
+		if not dir:
 			return
 		count = 0
 		for (dirname, sf, longname) in sfiles:
@@ -1008,21 +1027,13 @@ class gui_frame(wx.Frame):
 			return
 
 		dir = self.config.get_savefile_dir("")
-		fd = wx.FileDialog(self, "Import Save File", dir,
-				   wildcard = ("PS2 save files"
-					       " (.cbs;.psu;.max;.sps;.xps)"
-					       "|*.cbs;*.psu;*.max;*.sps;*.xps"
-					       "|All files|*.*"),
-				   style = (wx.FD_OPEN | wx.FD_MULTIPLE
-					    | wx.FD_FILE_MUST_EXIST))
-		if fd == None:
-			return
-		r = fd.ShowModal()
-		if r == wx.ID_CANCEL:
+		paths = filedialogs.open_files(self, "Import Save File", dir,
+					       SAVE_FILTERS, multiple = True)
+		if not paths:
 			return
 
 		success = None
-		for fn in fd.GetPaths():
+		for fn in paths:
 			try:
 				self._do_import(fn)
 				success = fn
