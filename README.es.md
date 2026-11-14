@@ -55,8 +55,9 @@ Sin instalar nada y sin dependencias: todo va incluido.
 3. Ábrela con doble clic, o ejecuta `./mymc-*-x86_64.AppImage` (puedes
    añadir la ruta de una tarjeta `.ps2` para abrirla directamente).
 
-Si no arranca y menciona FUSE, instala `libfuse2` (Fedora: `fuse-libs`;
-Debian/Ubuntu: `libfuse2` o `libfuse2t64`), o ejecútala con
+Funciona en la mayoría de distribuciones Linux de 64 bits publicadas
+desde 2022 y no necesita `libfuse2`. En el caso raro de que no arranque
+(por ejemplo, en un sistema sin FUSE), ejecútala con
 `--appimage-extract-and-run`.
 
 La AppImage abre la interfaz gráfica. Para la herramienta de línea de

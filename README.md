@@ -55,9 +55,9 @@ No installation and no dependencies: everything is included.
 3. Double-click it, or run `./mymc-*-x86_64.AppImage` (optionally followed
    by the path of a `.ps2` card to open).
 
-If it doesn't start and mentions FUSE, install `libfuse2` (Fedora:
-`fuse-libs`, Debian/Ubuntu: `libfuse2` or `libfuse2t64`), or run it with
-`--appimage-extract-and-run`.
+It works on most 64-bit Linux distributions released since 2022 and
+doesn't need `libfuse2`. In the rare case it doesn't start (for example
+on a system without FUSE), run it with `--appimage-extract-and-run`.
 
 The AppImage opens the graphical interface. For the command line tool,
 or on Windows/macOS, use the [Python version](#installation-from-source-python).
